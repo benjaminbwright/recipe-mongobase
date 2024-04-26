@@ -1,14 +1,50 @@
-const { Recipe, Ingredient } = require("../");
+const { Recipe, Ingredient } = require("../models/index.js");
 
 module.exports = {
   getAllRecipes: async (req, res) => {
-    res.send("all the recipes");
+    const recipes = await Recipe.find({}).populate({
+      path: "ingredients",
+      populate: "ingredient",
+    });
+    res.send(recipes);
   },
   getOneRecipe: async (req, res) => {
-    res.send("get single recipe");
+    const recipe = await Recipe.findOne({
+      _id: req.params.recipeId,
+    });
+    res.send(recipe);
   },
   createRecipe: async (req, res) => {
-    res.send("create a new recipe");
+    const recipe = req.body;
+    const newRecipe = new Recipe({
+      name: recipe.name,
+      instructions: recipe.instructions,
+    });
+
+    for (let i = 0; i < recipe.ingredients.length; i++) {
+      const { ingredient, amount, unit } = recipe.ingredients[i];
+
+      let newIngredient;
+
+      newIngredient = await Ingredient.findOne({
+        name: ingredient,
+      });
+
+      if (!newIngredient) {
+        newIngredient = await Ingredient.create({
+          name: ingredient,
+        });
+      }
+
+      newRecipe.ingredients.push({
+        ingredient: newIngredient._id,
+        amount,
+        unit,
+      });
+    }
+
+    newRecipe.save();
+    res.json(newRecipe);
   },
   updateRecipe: async (req, res) => {
     res.send("update a single recipe");
