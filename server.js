@@ -1,5 +1,6 @@
 const express = require("express");
 const router = require("./routes");
+const db = require("./config/connection.js");
 
 const port = process.env.PORT || 3001;
 
@@ -10,6 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/", router);
 
-app.listen(port, () => {
-  console.log(`Express server listening to port ${port}`);
+db.once("open", () => {
+  app.listen(port, () => {
+    console.log(`Express server listening to port ${port}`);
+  });
 });
