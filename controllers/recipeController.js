@@ -1,3 +1,5 @@
+const { Recipe, Ingredient } = require("../");
+
 module.exports = {
   getAllRecipes: async (req, res) => {
     res.send("all the recipes");

@@ -6,6 +6,8 @@ db.once("open", async () => {
   await Recipe.deleteMany({});
   await Ingredient.deleteMany({});
 
+  console.log("collections cleared.");
+
   recipes.forEach(async (recipe) => {
     const newRecipe = new Recipe({
       name: recipe.name,
@@ -15,12 +17,20 @@ db.once("open", async () => {
     for (let i = 0; i < recipe.ingredients.length; i++) {
       const { ingredient, amount, unit } = recipe.ingredients[i];
 
-      const { _id: ingredientId } = await Ingredient.create({
+      let newIngredient;
+
+      newIngredient = await Ingredient.findOne({
         name: ingredient,
       });
 
+      if (!newIngredient) {
+        newIngredient = await Ingredient.create({
+          name: ingredient,
+        });
+      }
+
       newRecipe.ingredients.push({
-        ingredient: ingredientId,
+        ingredient: newIngredient._id,
         amount,
         unit,
       });
@@ -29,5 +39,5 @@ db.once("open", async () => {
     newRecipe.save();
   });
 
-  process.exit(0);
+  console.log("collections seeded");
 });
