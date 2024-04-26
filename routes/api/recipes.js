@@ -1,27 +1,21 @@
 const recipesRouter = require("express").Router();
+const {
+  getAllRecipes,
+  getOneRecipe,
+  createRecipe,
+  updateRecipe,
+  deleteRecipe,
+  getRecipesByIngredient,
+} = require("../../controllers/recipeController.js");
 
-recipesRouter.get("/", async (req, res) => {
-  res.send("all the recipes");
-});
+recipesRouter.route("/").get(getAllRecipes).post(createRecipe);
 
-recipesRouter.get("/:recipeId", async (req, res) => {
-  res.send("get single recipe");
-});
+recipesRouter
+  .route("/:recipeId")
+  .get(getOneRecipe)
+  .put(updateRecipe)
+  .delete(deleteRecipe);
 
-recipesRouter.get("/:ingredientId", async (req, res) => {
-  res.send("get recipes by ingredient");
-});
-
-recipesRouter.post("/", async (req, res) => {
-  res.send("create a new recipe");
-});
-
-recipesRouter.put("/:recipeId", async (req, res) => {
-  res.send("update a single recipe");
-});
-
-recipesRouter.delete("/:recipeId", async (req, res) => {
-  res.send("delete a single recipe");
-});
+recipesRouter.get("/:ingredientId", getRecipesByIngredient);
 
 module.exports = recipesRouter;
